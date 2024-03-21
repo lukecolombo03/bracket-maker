@@ -1,12 +1,9 @@
-//Array of matchups
-//A single matchup is an array of two teams (represented as objects)
+
 import {useState} from "react";
 
-let initialTeams = [];
-
-export default function TeamAddPanel() {
-    const [teams, setTeams] = useState(initialTeams);
-    const [userInput, setUserInput] = useState('')
+export default function TeamAddPanel({setTeams, teams}) {
+    // const [teams, setTeams] = useState(parentTeams);
+    const [userInput, setUserInput] = useState('');
 
     //Add a new team based on data from child component (AddNewTeam)
     //TODO: let users drag to reorder the teams/pick their matchups
@@ -20,6 +17,8 @@ export default function TeamAddPanel() {
             }
         }
         //add new team to teams
+        //TODO: Right now you need to call both parentCallback and setTeams to keep the data
+        // consistent, should fix
         if (!nameTaken) {
             let newID = (teams.length === 0) ? 0 : teams[teams.length - 1].id + 1;
             const newTeam = {name: newNameRequest, id: newID, votes: 0};
@@ -46,14 +45,9 @@ export default function TeamAddPanel() {
         setUserInput("")
     }
 
-    function unflattenTeams() {
-        console.log(teams);
-        let newTeams = teams;
-        for (let i = 0; i < teams.length - 1; i++) {
-            let newMatch = [newTeams.slice(i, i + 1)]
-            newTeams = [...newTeams, newMatch]
-        }
-        console.log(newTeams)
+    function resetTeams() {
+        let nextTeams = [];
+        setTeams(nextTeams);
     }
 
     return (
@@ -61,8 +55,8 @@ export default function TeamAddPanel() {
             <h2>Add Contestants</h2>
             <ul>
                 {teams.map((team, i) => (
-                    <div>
-                        <li key={team.id}>
+                    <div key={team.id}>
+                        <li >
                             {i + 1}. {team.name}
                         </li>
                         <button onClick={() => moveTeam(team, i, true)}>Move up</button>
@@ -78,7 +72,7 @@ export default function TeamAddPanel() {
                 </label>
                 <input type={"submit"} value={"Submit"}/>
             </form>
-            <button onClick={() => unflattenTeams()}>Unflatten teams (view in console)</button>
+            <button onClick={() => resetTeams()}>Reset all teams</button>
             <br/>
 
         </>
